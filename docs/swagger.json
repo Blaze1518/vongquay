@@ -1,0 +1,653 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API documentation for HappyBirthDayF168",
+        "title": "HappyBirthDayF168",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8081",
+    "basePath": "/api/v1",
+    "paths": {
+        "/game/campaign": {
+            "post": {
+                "description": "Tạo mới một chiến dịch với tên và mã code riêng biệt. Hệ thống tự động chặn trùng mã code.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Campaigns"
+                ],
+                "summary": "Tạo mới một chiến dịch (Campaign)",
+                "parameters": [
+                    {
+                        "description": "Thông tin chiến dịch cần tạo mới",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_game_campaign.CreateCampaignRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Tạo chiến dịch thành công",
+                        "schema": {
+                            "$ref": "#/definitions/internal_game_campaign.Campaign"
+                        }
+                    },
+                    "400": {
+                        "description": "Dữ liệu gửi lên không hợp lệ hoặc sai định dạng JSON",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError"
+                        }
+                    },
+                    "409": {
+                        "description": "Mã định danh chiến dịch (Code) đã tồn tại",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống nội bộ",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/game/prize": {
+            "post": {
+                "description": "Tạo mới một giải thưởng thuộc về một chiến dịch cụ thể bằng campaign_id.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Prizes"
+                ],
+                "summary": "Tạo mới một giải thưởng (Prize)",
+                "parameters": [
+                    {
+                        "description": "Thông tin giải thưởng cần tạo mới",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_game_prize.CreatePrizeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Tạo giải thưởng thành công",
+                        "schema": {
+                            "$ref": "#/definitions/internal_game_prize.Prize"
+                        }
+                    },
+                    "400": {
+                        "description": "Dữ liệu gửi lên không hợp lệ hoặc sai định dạng JSON",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống nội bộ",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/game/ticket": {
+            "post": {
+                "description": "Tạo mới một lượt chơi/vé số thuộc về một chiến dịch. Mã vé dài 21 ký tự sẽ tự động được sinh ngẫu nhiên bảo mật ở hệ thống.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Phát hành một vé số mới (Ticket)",
+                "parameters": [
+                    {
+                        "description": "Thông tin chiến dịch để cấp vé",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_game_ticket.CreateTicketRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Phát hành vé thành công",
+                        "schema": {
+                            "$ref": "#/definitions/internal_game_ticket.Ticket"
+                        }
+                    },
+                    "400": {
+                        "description": "Dữ liệu gửi lên không hợp lệ hoặc sai định dạng JSON",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống nội bộ",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/game/ticket/import": {
+            "post": {
+                "description": "Nhận file .xlsx xử lý bất đồng bộ dưới nền.",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Upload file Excel để import lượng lớn vé số",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID của chiến dịch",
+                        "name": "campaign_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "File Excel chứa danh sách mã vé (.xlsx)",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Đã tiếp nhận file và đang xử lý ngầm",
+                        "schema": {
+                            "$ref": "#/definitions/internal_game_ticket.TicketImportJob"
+                        }
+                    }
+                }
+            }
+        },
+        "/game/winner/draw": {
+            "post": {
+                "description": "Thực hiện bốc thăm ngẫu nhiên bảo mật dưới dạng Transaction để tìm vé trúng thưởng, tự động trừ kho giải và hủy các vé còn lại của user trúng giải.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Winners"
+                ],
+                "summary": "Kích hoạt quay số xác định người trúng giải (Draw)",
+                "parameters": [
+                    {
+                        "description": "Thông tin chiến dịch và giải thưởng cần quay",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_game_winner.DrawRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Quay số thành công và đã xác định người trúng giải",
+                        "schema": {
+                            "$ref": "#/definitions/internal_game_winner.Winner"
+                        }
+                    },
+                    "400": {
+                        "description": "Lỗi nghiệp vụ (Hết giải thưởng, Hết vé hợp lệ hoặc sai dữ liệu đầu vào)",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống nội bộ",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError"
+                        }
+                    }
+                }
+            }
+        },
+        "/whitelist-ips/": {
+            "post": {
+                "description": "Creates a unique IP or CIDR row in table whitelist_ips. Stored as PostgreSQL cidr: use a network prefix (e.g. 203.0.113.10/32 for a single IPv4 host, 2001:db8::/32 for an IPv6 range). Duplicate ip_address returns 409. is_active is stored as-is; access control must ignore rows with is_active=false.\nOn success the JSON envelope uses success/data; data is a WhitelistIP object (id, ip_address, description, is_active, created_at, updated_at).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "whitelist-ips"
+                ],
+                "summary": "Create whitelist IP",
+                "operationId": "createWhitelistIP",
+                "parameters": [
+                    {
+                        "description": "Create whitelist IP payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/whitelistip.CreateWhitelistIPRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created; data field contains WhitelistIP",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error (invalid JSON or binding rules)",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.Response"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict — IP/CIDR already exists",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected server error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "github_com_Blaze1518_sinhnhatf168_internal_errors.APIError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "details": {},
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_Blaze1518_sinhnhatf168_internal_errors.ErrorInfo": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "details": {},
+                "message": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "request_id": {
+                    "type": "string"
+                },
+                "retry_after": {
+                    "type": "integer"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_Blaze1518_sinhnhatf168_internal_errors.Links": {
+            "type": "object",
+            "properties": {
+                "first": {
+                    "type": "string"
+                },
+                "last": {
+                    "type": "string"
+                },
+                "next": {
+                    "type": "string"
+                },
+                "prev": {
+                    "type": "string"
+                },
+                "self": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_Blaze1518_sinhnhatf168_internal_errors.Meta": {
+            "type": "object",
+            "properties": {
+                "links": {
+                    "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.Links"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "per_page": {
+                    "type": "integer"
+                },
+                "request_id": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_Blaze1518_sinhnhatf168_internal_errors.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {
+                    "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.ErrorInfo"
+                },
+                "meta": {
+                    "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.Meta"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "internal_game_campaign.Campaign": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "ended_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "started_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_game_campaign.CreateCampaignRequest": {
+            "type": "object",
+            "required": [
+                "code",
+                "name"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "example": "SINHNHAT_F168_2026"
+                },
+                "ended_at": {
+                    "type": "string",
+                    "example": "2026-06-26T23:59:59Z"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "example": "Chương trình Khuyến mãi Sinh nhật F168"
+                },
+                "started_at": {
+                    "type": "string",
+                    "example": "2026-05-26T00:00:00Z"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "DRAFT",
+                        "ACTIVE",
+                        "PAUSED",
+                        "ENDED"
+                    ],
+                    "example": "ACTIVE"
+                }
+            }
+        },
+        "internal_game_prize.CreatePrizeRequest": {
+            "type": "object",
+            "required": [
+                "campaign_id",
+                "name",
+                "quantity"
+            ],
+            "properties": {
+                "campaign_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "example": "Xe máy Honda Vision 2026"
+                },
+                "priority": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "quantity": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 10
+                }
+            }
+        },
+        "internal_game_prize.Prize": {
+            "type": "object",
+            "properties": {
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_game_ticket.CreateTicketRequest": {
+            "type": "object",
+            "required": [
+                "campaign_id"
+            ],
+            "properties": {
+                "campaign_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "internal_game_ticket.Ticket": {
+            "type": "object",
+            "properties": {
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_canceled": {
+                    "type": "boolean"
+                },
+                "is_winner": {
+                    "type": "boolean"
+                },
+                "ticket_number": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_game_ticket.TicketImportJob": {
+            "type": "object",
+            "properties": {
+                "campaignID": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "errorLog": {
+                    "type": "string"
+                },
+                "failedRows": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "successRows": {
+                    "type": "integer"
+                },
+                "totalRows": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_game_winner.DrawRequest": {
+            "type": "object",
+            "required": [
+                "campaign_id",
+                "prize_id"
+            ],
+            "properties": {
+                "campaign_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "prize_id": {
+                    "type": "integer",
+                    "example": 2
+                }
+            }
+        },
+        "internal_game_winner.Winner": {
+            "type": "object",
+            "properties": {
+                "campaign_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "draw_order": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "prize_id": {
+                    "type": "integer"
+                },
+                "ticket_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "whitelistip.CreateWhitelistIPRequest": {
+            "type": "object",
+            "required": [
+                "ip_address",
+                "is_active"
+            ],
+            "properties": {
+                "description": {
+                    "description": "Description optional human-readable note (e.g. office name, ticket id).",
+                    "type": "string",
+                    "maxLength": 255,
+                    "example": "HQ VPN egress - INC-1234"
+                },
+                "ip_address": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "example": "203.0.113.10/32"
+                },
+                "is_active": {
+                    "description": "IsActive when false, the entry is persisted but must not grant access (enforcement is middleware responsibility).",
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        }
+    }
+}

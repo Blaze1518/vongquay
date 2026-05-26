@@ -1,0 +1,8 @@
+-- Migration: create_tickets_table (rollback)
+-- Created: 2026-05-26T09:55:54+04:00
+
+BEGIN;
+
+-- Add your rollback SQL here
+
+COMMIT;
