@@ -1,0 +1,99 @@
+name: happy-birthday-f168
+
+services:
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: happy-birthday-postgres-db
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: true
+    volumes:
+      - postgres-storage-vol:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          memory: 128M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - internal-db-net
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: happy-birthday-pgadmin-web
+    restart: unless-stopped
+    user: "root:root"
+    ports:
+      - "5050:80"
+
+    env_file:
+      - path: .env
+        required: true
+
+    volumes:
+      - pgadmin-storage-vol:/var/lib/pgadmin
+
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+
+    networks:
+      - internal-db-net
+      - external-public-net
+
+  api-server:
+    image: be_sinhnhatf168_new:latest
+    container_name: happy-birthday-go-api-server
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - path: .env
+        required: true
+
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          memory: 64M
+
+    networks:
+      - internal-db-net
+      - external-public-net
+
+networks:
+  internal-db-net:
+    driver: bridge
+    internal: true
+    name: happy-birthday-internal-db-net
+
+  external-public-net:
+    driver: bridge
+    internal: false
+    name: happy-birthday-external-public-net
+
+volumes:
+  postgres-storage-vol:
+    name: happy-birthday-postgres-storage-vol
+  pgadmin-storage-vol:
+    name: happy-birthday-pgadmin-storage-vol
