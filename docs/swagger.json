@@ -7,7 +7,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8080",
+    "host": "api-sinhnhatf168.attservice.org",
     "basePath": "/api/v1",
     "paths": {
         "/game/campaign": {

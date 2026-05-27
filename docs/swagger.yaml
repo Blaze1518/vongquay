@@ -249,7 +249,7 @@ definitions:
     - ip_address
     - is_active
     type: object
-host: localhost:8080
+host: api-sinhnhatf168.attservice.org
 info:
   contact: {}
   description: API documentation for HappyBirthDayF168
