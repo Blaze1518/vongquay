@@ -3,6 +3,6 @@
 
 BEGIN;
 
--- Add your rollback SQL here
+DROP TABLE IF EXISTS tickets;
 
 COMMIT;

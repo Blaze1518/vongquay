@@ -27,7 +27,7 @@ type migrateInterface interface {
 	// Migrate(version uint) error
 	// Version() (uint, bool, error)
 	// Force(version int) error
-	// Drop() error
+	Drop() error
 	Close() (error, error)
 }
 
@@ -87,6 +87,17 @@ func (m *Migrator) Up(ctx context.Context) error {
 		slog.Info("Migrations completed successfully", "status", "✅")
 		return nil
 	}
+}
+
+func (m *Migrator) Drop() error {
+	slog.Warn("Dropping all tables...")
+
+	if err := m.migrate.Drop(); err != nil {
+		return fmt.Errorf("failed to drop tables: %w", err)
+	}
+
+	slog.Info("All tables dropped", "status", "✅")
+	return nil
 }
 
 func (m *Migrator) Close() error {

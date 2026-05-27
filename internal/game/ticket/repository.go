@@ -18,9 +18,9 @@ type Repository interface {
 	GetRandomValidTicket(ctx context.Context, campaignID string) (*Ticket, error)
 	
 	CreateJob(ctx context.Context, job *TicketImportJob) error
-	UpdateJobStatus(ctx context.Context, jobID uint, status string) error
-	UpdateJobProgress(ctx context.Context, jobID uint, total, success, failed int) error
-	CompleteJob(ctx context.Context, jobID uint, total, success, failed int, errorLog string) error
+	UpdateJobStatus(ctx context.Context, jobID string, status string) error
+	UpdateJobProgress(ctx context.Context, jobID string, total, success, failed int) error
+	CompleteJob(ctx context.Context, jobID string, total, success, failed int, errorLog string) error
 }
 
 type repository struct {
@@ -75,12 +75,12 @@ func (r *repository) CreateJob(ctx context.Context, job *TicketImportJob) error 
 	return r.getDB(ctx).WithContext(ctx).Create(job).Error
 }
 
-func (r *repository) UpdateJobStatus(ctx context.Context, jobID uint, status string) error {
+func (r *repository) UpdateJobStatus(ctx context.Context, jobID string, status string) error {
 	return r.getDB(ctx).WithContext(ctx).Model(&TicketImportJob{}).
 		Where("id = ?", jobID).Update("status", status).Error
 }
 
-func (r *repository) UpdateJobProgress(ctx context.Context, jobID uint, total, success, failed int) error {
+func (r *repository) UpdateJobProgress(ctx context.Context, jobID string, total, success, failed int) error {
 	return r.getDB(ctx).WithContext(ctx).Model(&TicketImportJob{}).Where("id = ?", jobID).
 		Updates(map[string]interface{}{
 			"total_rows":   total,
@@ -89,7 +89,7 @@ func (r *repository) UpdateJobProgress(ctx context.Context, jobID uint, total, s
 		}).Error
 }
 
-func (r *repository) CompleteJob(ctx context.Context, jobID uint, total, success, failed int, errorLog string) error {
+func (r *repository) CompleteJob(ctx context.Context, jobID string, total, success, failed int, errorLog string) error {
 	return r.getDB(ctx).WithContext(ctx).Model(&TicketImportJob{}).Where("id = ?", jobID).
 		Updates(map[string]interface{}{
 			"status":       "COMPLETED",

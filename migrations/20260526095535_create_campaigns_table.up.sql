@@ -5,7 +5,7 @@
 BEGIN;
 
 CREATE TABLE campaigns (
-    id         BIGSERIAL PRIMARY KEY,
+    id         UUID PRIMARY KEY,
     name       VARCHAR(255) NOT NULL,
     code       VARCHAR(100) NOT NULL,
     status     VARCHAR(30) NOT NULL DEFAULT 'ACTIVE',
@@ -15,6 +15,6 @@ CREATE TABLE campaigns (
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE UNIQUE INDEX idx_campaigns_code ON campaigns(code);
+ALTER TABLE campaigns ADD CONSTRAINT uq_campaigns_code UNIQUE (code);
 
 COMMIT;

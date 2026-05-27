@@ -9,11 +9,13 @@ import (
 	"os"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/xuri/excelize/v2"
+	"gorm.io/gorm"
 )
 
 type TicketImportJob struct {
-	ID          uint      `gorm:"primaryKey"`
+	ID        string      `gorm:"type:uuid;primaryKey" json:"id"`
 	CampaignID  string    `gorm:"type:uuid;not null"`
 	Status      string    `gorm:"size:30;default:PENDING"`
 	TotalRows   int       `gorm:"default:0"`
@@ -25,7 +27,16 @@ type TicketImportJob struct {
 }
 
 func (TicketImportJob) TableName() string {
-	return "ticketimportjobs"
+	return "ticket_import_jobs"
+}
+
+func (c *TicketImportJob) BeforeCreate(tx *gorm.DB) (err error) {
+	id, err := uuid.NewV7()
+	if err != nil {
+		return err
+	}
+	c.ID = id.String()
+	return nil
 }
 
 type RowErrorDetail struct {
@@ -38,7 +49,7 @@ type ImportService interface {
 	Import(ctx context.Context, req ImportExcelRequest) (*TicketImportJob, error)
 	ProcessExcelAsync(ctx context.Context, job *TicketImportJob, filePath string)
 	insertBatchWithMetrics(ctx context.Context, tickets []Ticket) int
-	failJob(ctx context.Context, jobID uint, reason string)
+	failJob(ctx context.Context, jobID string, reason string)
 }
 
 type importService struct {
@@ -230,7 +241,7 @@ func (s *importService) insertBatchWithMetrics(ctx context.Context, tickets []Ti
 	return rowsAffected
 }
 
-func (s *importService) failJob(ctx context.Context, jobID uint, reason string) {
+func (s *importService) failJob(ctx context.Context, jobID string, reason string) {
 	errorLog := fmt.Sprintf(`[{"reason": "%s"}]`, reason)
 	if err := s.ticketRepo.CompleteJob(ctx, jobID, 0, 0, 0, errorLog); err != nil {
 		slog.Error("Thất bại khi cập nhật trạng thái FAILED cho Job", "job_id", jobID, "err", err)

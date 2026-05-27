@@ -19,7 +19,7 @@ func main() {
 	logger := slog.Default()
 	timeoutFlag := flag.String("timeout", "", "Migration timeout (e.g., 5m, 30s, 1h)")
 	lockTimeoutFlag := flag.String("lock-timeout", "", "Lock acquisition timeout (e.g., 30s, 1m)")
-	// forceFlag := flag.Bool("force", false, "Skip confirmations for destructive operations")
+	forceFlag := flag.Bool("force", false, "Skip confirmations for destructive operations")
 	flag.Parse()
 
 	args := flag.Args()
@@ -103,8 +103,8 @@ func main() {
 	// 	handleVersion(migrator)
 	// case "force":
 	// 	handleForce(migrator, args)
-	// case "drop":
-	// 	handleDrop(migrator, *forceFlag)
+	case "drop":
+		handleDrop(migrator, *forceFlag)
 	case "create":
 		handleCreate(cfg.Migrations.Directory, args)
 	default:
@@ -231,26 +231,26 @@ func main() {
 // 	}
 // }
 
-// func handleDrop(migrator *migrate.Migrator, force bool) {
-// 	if !force {
-// 		fmt.Println("🚨 DANGER: This will drop all tables!")
-// 		fmt.Print("Type 'YES' to confirm: ")
-// 		var confirmation string
-// 		if _, err := fmt.Scanln(&confirmation); err != nil {
-// 			slog.Error("Failed to read confirmation", "err", err)
-// 			os.Exit(1)
-// 		}
-// 		if confirmation != "YES" {
-// 			slog.Info("Operation cancelled")
-// 			return
-// 		}
-// 	}
+func handleDrop(migrator *migrate.Migrator, force bool) {
+	if !force {
+		fmt.Println("🚨 DANGER: This will drop all tables!")
+		fmt.Print("Type 'YES' to confirm: ")
+		var confirmation string
+		if _, err := fmt.Scanln(&confirmation); err != nil {
+			slog.Error("Failed to read confirmation", "err", err)
+			os.Exit(1)
+		}
+		if confirmation != "YES" {
+			slog.Info("Operation cancelled")
+			return
+		}
+	}
 
-// 	if err := migrator.Drop(); err != nil {
-// 		slog.Error("Migration error", "err", err)
-// 		os.Exit(1)
-// 	}
-// }
+	if err := migrator.Drop(); err != nil {
+		slog.Error("Migration error", "err", err)
+		os.Exit(1)
+	}
+}
 
 func handleCreate(migrationsDir string, args []string) {
 	if len(args) < 2 {

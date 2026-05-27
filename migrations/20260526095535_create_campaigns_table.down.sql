@@ -3,7 +3,6 @@
 
 BEGIN;
 
--- Xóa bảng campaigns (Index idx_campaigns_code sẽ tự động bị xóa theo bảng)
 DROP TABLE IF EXISTS campaigns;
 
 COMMIT;
