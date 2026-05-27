@@ -41,12 +41,5 @@ func (h *Handler) Draw(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, httperrs.Success(Winner{
-		ID:         result.ID,
-		CampaignID: result.CampaignID,
-		PrizeID:    result.PrizeID,
-		TicketID:   result.TicketID,
-		DrawOrder:  result.DrawOrder,
-		CreatedAt:  result.CreatedAt,
-	}))
+	c.JSON(http.StatusOK, httperrs.Success(*result))
 }

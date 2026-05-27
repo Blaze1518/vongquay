@@ -38,7 +38,8 @@ func (r *repository) GetPrizeForUpdate(ctx context.Context, id string) (*Prize, 
 	var p Prize
 	err := r.getDB(ctx).WithContext(ctx).
 		Clauses(clause.Locking{Strength: "UPDATE"}).
-		First(&p, id).Error
+		Where("id = ?", id).
+		First(&p).Error
 
 	if err != nil {
 		return nil, err

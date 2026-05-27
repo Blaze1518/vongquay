@@ -73,7 +73,7 @@ definitions:
       ended_at:
         type: string
       id:
-        type: integer
+        type: string
       name:
         type: string
       started_at:
@@ -114,8 +114,8 @@ definitions:
   internal_game_prize.CreatePrizeRequest:
     properties:
       campaign_id:
-        example: 1
-        type: integer
+        example: 018f3c4a-2d4c-7b1e-9c1a-2b1c0f2a9f3a
+        type: string
       name:
         example: Xe máy Honda Vision 2026
         maxLength: 255
@@ -135,11 +135,11 @@ definitions:
   internal_game_prize.Prize:
     properties:
       campaign_id:
-        type: integer
+        type: string
       created_at:
         type: string
       id:
-        type: integer
+        type: string
       name:
         type: string
       priority:
@@ -152,19 +152,19 @@ definitions:
   internal_game_ticket.CreateTicketRequest:
     properties:
       campaign_id:
-        example: 1
-        type: integer
+        example: 018f3c4a-2d4c-7b1e-9c1a-2b1c0f2a9f3a
+        type: string
     required:
     - campaign_id
     type: object
   internal_game_ticket.Ticket:
     properties:
       campaign_id:
-        type: integer
+        type: string
       created_at:
         type: string
       id:
-        type: integer
+        type: string
       is_canceled:
         type: boolean
       is_winner:
@@ -179,7 +179,7 @@ definitions:
   internal_game_ticket.TicketImportJob:
     properties:
       campaignID:
-        type: integer
+        type: string
       createdAt:
         type: string
       errorLog:
@@ -187,7 +187,7 @@ definitions:
       failedRows:
         type: integer
       id:
-        type: integer
+        type: string
       status:
         type: string
       successRows:
@@ -200,11 +200,11 @@ definitions:
   internal_game_winner.DrawRequest:
     properties:
       campaign_id:
-        example: 1
-        type: integer
+        example: 018f3c4a-2d4c-7b1e-9c1a-2b1c0f2a9f3a
+        type: string
       prize_id:
-        example: 2
-        type: integer
+        example: 018f3c4a-2d4c-7b1e-9c1a-2b1c0f2a9f3b
+        type: string
     required:
     - campaign_id
     - prize_id
@@ -212,17 +212,21 @@ definitions:
   internal_game_winner.Winner:
     properties:
       campaign_id:
-        type: integer
+        type: string
       created_at:
         type: string
       draw_order:
         type: integer
       id:
-        type: integer
+        type: string
       prize_id:
-        type: integer
+        type: string
       ticket_id:
-        type: integer
+        type: string
+      ticket_number:
+        type: string
+      username:
+        type: string
     type: object
   whitelistip.CreateWhitelistIPRequest:
     properties:
@@ -355,11 +359,11 @@ paths:
       - multipart/form-data
       description: Nhận file .xlsx xử lý bất đồng bộ dưới nền.
       parameters:
-      - description: ID của chiến dịch
+      - description: ID của chiến dịch (UUID v7)
         in: formData
         name: campaign_id
         required: true
-        type: integer
+        type: string
       - description: File Excel chứa danh sách mã vé (.xlsx)
         in: formData
         name: file

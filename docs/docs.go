@@ -175,8 +175,8 @@ const docTemplate = `{
                 "summary": "Upload file Excel để import lượng lớn vé số",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "ID của chiến dịch",
+                        "type": "string",
+                        "description": "ID của chiến dịch (UUID v7)",
                         "name": "campaign_id",
                         "in": "formData",
                         "required": true
@@ -410,7 +410,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
@@ -472,8 +472,8 @@ const docTemplate = `{
             ],
             "properties": {
                 "campaign_id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "string",
+                    "example": "018f3c4a-2d4c-7b1e-9c1a-2b1c0f2a9f3a"
                 },
                 "name": {
                     "type": "string",
@@ -495,13 +495,13 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "campaign_id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "created_at": {
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
@@ -524,8 +524,8 @@ const docTemplate = `{
             ],
             "properties": {
                 "campaign_id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "string",
+                    "example": "018f3c4a-2d4c-7b1e-9c1a-2b1c0f2a9f3a"
                 }
             }
         },
@@ -533,13 +533,13 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "campaign_id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "created_at": {
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "is_canceled": {
                     "type": "boolean"
@@ -562,7 +562,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "campaignID": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "createdAt": {
                     "type": "string"
@@ -574,7 +574,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "status": {
                     "type": "string"
@@ -598,12 +598,12 @@ const docTemplate = `{
             ],
             "properties": {
                 "campaign_id": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "string",
+                    "example": "018f3c4a-2d4c-7b1e-9c1a-2b1c0f2a9f3a"
                 },
                 "prize_id": {
-                    "type": "integer",
-                    "example": 2
+                    "type": "string",
+                    "example": "018f3c4a-2d4c-7b1e-9c1a-2b1c0f2a9f3b"
                 }
             }
         },
@@ -611,7 +611,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "campaign_id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "created_at": {
                     "type": "string"
@@ -620,13 +620,19 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "prize_id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "ticket_id": {
-                    "type": "integer"
+                    "type": "string"
+                },
+                "ticket_number": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },

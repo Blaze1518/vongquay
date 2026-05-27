@@ -1,6 +1,8 @@
 package server
 
 import (
+	"time"
+
 	"github.com/Blaze1518/sinhnhatf168/internal/auth"
 	"github.com/Blaze1518/sinhnhatf168/internal/config"
 	"github.com/Blaze1518/sinhnhatf168/internal/errors"
@@ -40,16 +42,22 @@ func SetupRouter(authHandler *auth.Handler, campaignHandler *campaign.Handler, p
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	var defaultLimit gin.HandlerFunc
 	rlCfg := cfg.Ratelimit
 	if rlCfg.Enabled {
-		router.Use(
-			middleware.NewRateLimitMiddleware(
-				rlCfg.Window,
-				rlCfg.Requests,
-				middleware.ResolveClientIP,
-				nil,
-			),
+		defaultLimit = middleware.NewRateLimitMiddleware(
+			rlCfg.Window,
+			rlCfg.Requests,
+			middleware.ResolveClientIP,
+			nil,
 		)
+	}
+
+	var authLimit, drawLimit, importLimit gin.HandlerFunc
+	if rlCfg.Enabled {
+		authLimit = middleware.NewRateLimitMiddleware(time.Minute, 5, middleware.ResolveClientIP, nil)
+		drawLimit = middleware.NewRateLimitMiddleware(time.Minute, 10, middleware.ResolveClientIP, nil)
+		importLimit = middleware.NewRateLimitMiddleware(time.Minute, 2, middleware.ResolveClientIP, nil)
 	}
 
 	// router.Use(whitelistip.WhitelistIPMiddleware(
@@ -61,9 +69,16 @@ func SetupRouter(authHandler *auth.Handler, campaignHandler *campaign.Handler, p
 	{
 		authGroup := v1.Group("/auth")
 		{
-			authGroup.GET("/login", authHandler.Login)
+			if rlCfg.Enabled {
+				authGroup.GET("/login", authLimit, authHandler.Login)
+			} else {
+				authGroup.GET("/login", authHandler.Login)
+			}
 		}
 		gameGroup := v1.Group("/game")
+		if rlCfg.Enabled {
+			gameGroup.Use(defaultLimit) 
+		}
 		{
 			campaignGroup := gameGroup.Group("campaign")
 			{
@@ -76,11 +91,19 @@ func SetupRouter(authHandler *auth.Handler, campaignHandler *campaign.Handler, p
 			ticketGroup := gameGroup.Group("ticket")
 			{
 				ticketGroup.POST("/", ticketHandler.Create)
-				ticketGroup.POST("/import", ticketHandler.ImportExcel)
+				if rlCfg.Enabled {
+					ticketGroup.POST("/import", importLimit, ticketHandler.ImportExcel)
+				} else {
+					ticketGroup.POST("/import", ticketHandler.ImportExcel)
+				}
 			}
 			winnerGroup := gameGroup.Group("winner")
 			{
-				winnerGroup.POST("/draw", winnerHandler.Draw)
+				if rlCfg.Enabled {
+					winnerGroup.POST("/draw", drawLimit, winnerHandler.Draw)
+				} else {
+					winnerGroup.POST("/draw", winnerHandler.Draw)
+				}
 			}
 		}
 	}
