@@ -121,7 +121,7 @@ func (s *importService) ProcessExcelAsync(ctx context.Context, job *TicketImport
 	var errorDetails []RowErrorDetail
 	var batchTickets []Ticket
 
-	const batchSize = 1000
+	const batchSize = 5000
 	rowCount := 0
 	totalSuccess := 0
 	totalFailed := 0
@@ -201,9 +201,9 @@ func (s *importService) ProcessExcelAsync(ctx context.Context, job *TicketImport
 
 			batchTickets = batchTickets[:0]
 
-			time.Sleep(500 * time.Millisecond) 
+			time.Sleep(100 * time.Millisecond) 
 
-			if (rowCount-1) % 1000 == 0 {
+			if (rowCount-1) % 5000 == 0 {
                 _ = s.ticketRepo.UpdateJobProgress(ctx, job.ID, rowCount-1, totalSuccess, totalFailed)
             }
 		}
