@@ -1,0 +1,46 @@
+# --- Các file thực thi và biên dịch ---
+bin/
+pkg/
+dist/
+out/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# --- File cấu hình môi trường và bảo mật ---
+.env
+.env.*
+!.env.example
+
+# --- File log và dữ liệu tạm ---
+*.log
+log/
+tmp/
+
+# --- Các công cụ kiểm thử và báo cáo độ bao phủ ---
+*.test
+*.out
+coverage.txt
+
+# --- Dependencies (Nếu bạn không muốn commit thư mục vendor) ---
+# Khuyên dùng: Giữ lại go.mod và go.sum, bỏ qua vendor/ nếu muốn tải qua proxy
+vendor/
+
+# --- IDEs và Editor ---
+# JetBrains (GoLand, IntelliJ)
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Hệ điều hành (Mac, Windows)
+.DS_Store
+Thumbs.db
