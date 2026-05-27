@@ -27,6 +27,7 @@ FROM gcr.io/distroless/static-debian12:latest-amd64
 WORKDIR /app
 
 COPY --from=builder /app/server /app/server
+COPY --from=builder /build/migrations ./migrations
 
 EXPOSE 8080
 
