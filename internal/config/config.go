@@ -3,15 +3,11 @@ package config
 import (
 	"fmt"
 	"log/slog"
-	"os"
 	"strings"
 	"time"
 
 	"github.com/spf13/viper"
 )
-
-// executablePath is a package-level variable so tests can override it.
-var executablePath = os.Executable
 
 type Config struct {
 	App        AppConfig        `mapstructure:",squash"`

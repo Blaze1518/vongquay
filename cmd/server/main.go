@@ -67,10 +67,6 @@ func run() error {
 	if err != nil {
 		return fmt.Errorf("Có lỗi khi tạo migrator: %w", err)
 	}
-
-	if err != nil {
-        return fmt.Errorf("Có lỗi khi tạo migrator: %w", err)
-    }
     defer migrator.Close() // Nhớ close để giải phóng bộ nhớ
 
     // 1. Tạo context kiểm soát timeout cho việc chạy migration
