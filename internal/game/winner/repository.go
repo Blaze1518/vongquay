@@ -9,7 +9,7 @@ import (
 
 type Repository interface {
 	Create(ctx context.Context, winner *Winner) error
-	GetWinnersCountByPrize(ctx context.Context, campaignID, prizeID uint) (int64, error)
+	GetWinnersCountByPrize(ctx context.Context, campaignID, prizeID string) (int64, error)
 }
 
 type repository struct {
@@ -28,7 +28,7 @@ func (r *repository) Create(ctx context.Context, winner *Winner) error {
 	return r.getDB(ctx).WithContext(ctx).Create(winner).Error
 }
 
-func (r *repository) GetWinnersCountByPrize(ctx context.Context, campaignID, prizeID uint) (int64, error) {
+func (r *repository) GetWinnersCountByPrize(ctx context.Context, campaignID, prizeID string) (int64, error) {
 	var count int64
 	err := r.getDB(ctx).WithContext(ctx).Model(&Winner{}).
 		Where("campaign_id = ? AND prize_id = ?", campaignID, prizeID).

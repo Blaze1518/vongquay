@@ -57,7 +57,7 @@ func (h *Handler) Create(c *gin.Context) {
 // @Tags         Tickets
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        campaign_id  formData  int   true  "ID của chiến dịch"
+// @Param        campaign_id  formData  string   true  "ID của chiến dịch (UUID v7)"
 // @Param        file         formData  file  true  "File Excel chứa danh sách mã vé (.xlsx)"
 // @Success      202          {object}  TicketImportJob "Đã tiếp nhận file và đang xử lý ngầm"
 // @Router       /game/ticket/import [post]

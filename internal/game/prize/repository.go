@@ -11,7 +11,7 @@ import (
 type Repository interface {
 	Create(ctx context.Context, prize *Prize) error
 	Update(ctx context.Context, prize *Prize) error
-	GetPrizeForUpdate(ctx context.Context, id uint) (*Prize, error)
+	GetPrizeForUpdate(ctx context.Context, id string) (*Prize, error)
 }
 
 type repository struct {
@@ -34,7 +34,7 @@ func (r *repository) Create(ctx context.Context, prize *Prize) error {
 	return nil
 }
 
-func (r *repository) GetPrizeForUpdate(ctx context.Context, id uint) (*Prize, error) {
+func (r *repository) GetPrizeForUpdate(ctx context.Context, id string) (*Prize, error) {
 	var p Prize
 	err := r.getDB(ctx).WithContext(ctx).
 		Clauses(clause.Locking{Strength: "UPDATE"}).

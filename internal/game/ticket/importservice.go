@@ -14,7 +14,7 @@ import (
 
 type TicketImportJob struct {
 	ID          uint      `gorm:"primaryKey"`
-	CampaignID  uint      `gorm:"not null"`
+	CampaignID  string    `gorm:"type:uuid;not null"`
 	Status      string    `gorm:"size:30;default:PENDING"`
 	TotalRows   int       `gorm:"default:0"`
 	SuccessRows int       `gorm:"default:0"`
@@ -86,7 +86,6 @@ func (s *importService) Import(ctx context.Context, req ImportExcelRequest) (*Ti
 func (s *importService) ProcessExcelAsync(ctx context.Context, job *TicketImportJob, filePath string) {	
 	defer os.Remove(filePath)
 
-	// 1. Chuyển trạng thái sang PROCESSING thông qua Repo
 	if err := s.ticketRepo.UpdateJobStatus(ctx, job.ID, "PROCESSING"); err != nil {
 		slog.Error("Không thể cập nhật trạng thái Job sang PROCESSING", "job_id", job.ID, "err", err)
 	}
@@ -111,7 +110,7 @@ func (s *importService) ProcessExcelAsync(ctx context.Context, job *TicketImport
 	var errorDetails []RowErrorDetail
 	var batchTickets []Ticket
 
-	const batchSize = 2000
+	const batchSize = 1000
 	rowCount := 0
 	totalSuccess := 0
 	totalFailed := 0
@@ -190,7 +189,12 @@ func (s *importService) ProcessExcelAsync(ctx context.Context, job *TicketImport
 			}
 
 			batchTickets = batchTickets[:0]
-			_ = s.ticketRepo.UpdateJobProgress(ctx, job.ID, rowCount-1, totalSuccess, totalFailed)
+
+			time.Sleep(500 * time.Millisecond) 
+
+			if (rowCount-1) % 1000 == 0 {
+                _ = s.ticketRepo.UpdateJobProgress(ctx, job.ID, rowCount-1, totalSuccess, totalFailed)
+            }
 		}
 	}
 

@@ -12,7 +12,7 @@ import (
 )
 
 type Service interface {
-	ExecuteDraw(ctx context.Context, campaignID uint, prizeID uint) (*Winner, error)
+	ExecuteDraw(ctx context.Context, campaignID string, prizeID string) (*Winner, error)
 }
 
 type service struct {
@@ -31,7 +31,7 @@ func NewService(wr Repository, tr ticket.Repository, pr prize.Repository, db *go
 	}
 }
 
-func (s *service) ExecuteDraw(ctx context.Context, campaignID uint, prizeID uint) (*Winner, error) {
+func (s *service) ExecuteDraw(ctx context.Context, campaignID string, prizeID string) (*Winner, error) {
 	var winnerResult *Winner
 	err := baseRepo.RunInTransaction(s.db, ctx, func(txCtx context.Context) error {
 		
@@ -43,7 +43,7 @@ func (s *service) ExecuteDraw(ctx context.Context, campaignID uint, prizeID uint
 			return errors.New("giải thưởng này đã được phát hết")
 		}
 
-		luckyTicket, err := s.ticketRepo.GetRandomValidTicket(ctx, campaignID)
+		luckyTicket, err := s.ticketRepo.GetRandomValidTicket(txCtx, campaignID)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return errors.New("không còn vé số nào hợp lệ để quay thưởng")
@@ -61,7 +61,7 @@ func (s *service) ExecuteDraw(ctx context.Context, campaignID uint, prizeID uint
 		}
 
 		p.Quantity = p.Quantity - 1
-		if err := s.prizeRepo.Update(ctx, p); err != nil {
+		if err := s.prizeRepo.Update(txCtx, p); err != nil {
 			return fmt.Errorf("thất bại khi trừ số lượng giải thưởng: %w", err)
 		}
 
@@ -75,6 +75,8 @@ func (s *service) ExecuteDraw(ctx context.Context, campaignID uint, prizeID uint
 			CampaignID:   campaignID,
 			PrizeID:      prizeID,
 			TicketID:     luckyTicket.ID,
+			TicketNumber: luckyTicket.TicketNumber,
+			Username:     luckyTicket.Username,
 			DrawOrder:    int(existingWinners) + 1,
 		}
 		if err := s.winnerRepo.Create(txCtx, winnerResult); err != nil {

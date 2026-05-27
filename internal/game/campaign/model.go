@@ -1,6 +1,11 @@
 package campaign
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 const (
 	StatusDraft  = "DRAFT"
@@ -10,7 +15,7 @@ const (
 )
 
 type Campaign struct {
-	ID        uint       `gorm:"primaryKey" json:"id"`
+	ID        string     `gorm:"type:uuid;primaryKey" json:"id"`
 	Name      string     `gorm:"size:255;not null" json:"name"`
 	Code      string     `gorm:"size:100;uniqueIndex" json:"code"`
 	Status    string     `gorm:"size:30;default:ACTIVE" json:"status"`
@@ -23,4 +28,13 @@ type Campaign struct {
 
 func (Campaign) TableName() string {
 	return "campaigns"
+}
+
+func (c *Campaign) BeforeCreate(tx *gorm.DB) (err error) {
+	id, err := uuid.NewV7()
+	if err != nil {
+		return err
+	}
+	c.ID = id.String()
+	return nil
 }

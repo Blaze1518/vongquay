@@ -14,8 +14,8 @@ type Repository interface {
 	Create(ctx context.Context, ticket *Ticket) error
 	CreateInBatchesWithCount(ctx context.Context, tickets []Ticket) (int, error)
 	Update(ctx context.Context, ticket *Ticket) error
-	CancelOtherTickets(ctx context.Context, campaignID uint, username string, winningTicketID uint) error
-	GetRandomValidTicket(ctx context.Context, campaignID uint) (*Ticket, error)
+	CancelOtherTickets(ctx context.Context, campaignID string, username string, winningTicketID string) error
+	GetRandomValidTicket(ctx context.Context, campaignID string) (*Ticket, error)
 	
 	CreateJob(ctx context.Context, job *TicketImportJob) error
 	UpdateJobStatus(ctx context.Context, jobID uint, status string) error
@@ -45,14 +45,14 @@ func (r *repository) Create(ctx context.Context, ticket *Ticket) error {
 
 func (r *repository) CreateInBatchesWithCount(ctx context.Context, tickets []Ticket) (int, error) {
 	result := r.getDB(ctx).WithContext(ctx).
-		Clauses(clause.OnConflict{
-			Columns: []clause.Column{
-				{Name: "campaign_id"}, 
-				{Name: "ticket_number"},
-			},
-			DoNothing: true,
-		}).
-		CreateInBatches(tickets, 1000)
+        Clauses(clause.OnConflict{
+            Columns: []clause.Column{
+                {Name: "campaign_id"},
+                {Name: "ticket_number"},
+            },
+            DoNothing: true,
+        }).
+        Create(&tickets) 
 
 	if result.Error != nil {
 		return 0, result.Error
@@ -65,7 +65,7 @@ func (r *repository) Update(ctx context.Context, ticket *Ticket) error {
 	return r.getDB(ctx).WithContext(ctx).Save(ticket).Error
 }
 
-func (r *repository) CancelOtherTickets(ctx context.Context, campaignID uint, username string, winningTicketID uint) error {
+func (r *repository) CancelOtherTickets(ctx context.Context, campaignID string, username string, winningTicketID string) error {
 	return r.getDB(ctx).WithContext(ctx).Model(&Ticket{}).
 		Where("campaign_id = ? AND username = ? AND id != ?", campaignID, username, winningTicketID).
 		Update("is_canceled", true).Error
@@ -100,7 +100,7 @@ func (r *repository) CompleteJob(ctx context.Context, jobID uint, total, success
 		}).Error
 }
 
-func (r *repository) GetRandomValidTicket(ctx context.Context, campaignID uint) (*Ticket, error) {
+func (r *repository) GetRandomValidTicket(ctx context.Context, campaignID string) (*Ticket, error) {
 	var count int64
 
 	err := r.getDB(ctx).WithContext(ctx).Model(&Ticket{}).

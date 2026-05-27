@@ -1,7 +1,7 @@
 package winner
 
 type DrawRequest struct {
-	CampaignID uint `json:"campaign_id" binding:"required" example:"1"`
+	CampaignID string `json:"campaign_id" binding:"required" example:"018f3c4a-2d4c-7b1e-9c1a-2b1c0f2a9f3a"`
 
-	PrizeID uint `json:"prize_id" binding:"required" example:"2"`
+	PrizeID string `json:"prize_id" binding:"required" example:"018f3c4a-2d4c-7b1e-9c1a-2b1c0f2a9f3b"`
 }
