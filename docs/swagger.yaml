@@ -249,7 +249,7 @@ definitions:
     - ip_address
     - is_active
     type: object
-host: localhost:8081
+host: localhost:8080
 info:
   contact: {}
   description: API documentation for HappyBirthDayF168

@@ -24,7 +24,7 @@ import (
 // @description API documentation for HappyBirthDayF168
 // @termsOfService http://swagger.io/terms/
 
-// @host localhost:8081
+// @host localhost:8080
 // @BasePath /api/v1
 
 func main() {

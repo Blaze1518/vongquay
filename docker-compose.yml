@@ -13,10 +13,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.50"
-          memory: 512M
+          cpus: "1.00"
+          memory: 1024M
         reservations:
-          memory: 128M
+          memory: 256M
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
@@ -26,34 +26,36 @@ services:
     networks:
       - internal-db-net
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: happy-birthday-pgadmin-web
-    restart: unless-stopped
-    user: "root:root"
-    ports:
-      - "5050:80"
+  # pgadmin:
+  #   image: dpage/pgadmin4:latest
+  #   container_name: happy-birthday-pgadmin-web
+  #   restart: unless-stopped
+  #   user: "root:root"
+  #   ports:
+  #     - "5050:80"
 
-    env_file:
-      - path: .env
-        required: true
+  #   env_file:
+  #     - path: .env
+  #       required: true
 
-    volumes:
-      - pgadmin-storage-vol:/var/lib/pgadmin
+  #   volumes:
+  #     - pgadmin-storage-vol:/var/lib/pgadmin
 
-    depends_on:
-      postgres-db:
-        condition: service_healthy
+  #   depends_on:
+  #     postgres-db:
+  #       condition: service_healthy
 
-    deploy:
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: 128M
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: "1.00"
+  #         memory: 512M
+  #       reservations:
+  #         memory: 128M
 
-    networks:
-      - internal-db-net
-      - external-public-net
+  #   networks:
+  #     - internal-db-net
+  #     - external-public-net
 
   api-server:
     image: be_sinhnhatf168_new:latest
@@ -72,10 +74,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.50"
-          memory: 256M
+          cpus: "1.00"
+          memory: 512M
         reservations:
-          memory: 64M
+          memory: 128M
 
     networks:
       - internal-db-net
@@ -88,8 +90,7 @@ networks:
     name: happy-birthday-internal-db-net
 
   external-public-net:
-    driver: bridge
-    internal: false
+    external: true
     name: happy-birthday-external-public-net
 
 volumes:
