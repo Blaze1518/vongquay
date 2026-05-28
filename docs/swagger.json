@@ -193,6 +193,79 @@
                 }
             }
         },
+        "/game/winner": {
+            "get": {
+                "description": "Lấy danh sách lịch sử trúng thưởng dựa theo chiến dịch hoặc giải thưởng, hỗ trợ phân trang chuẩn hóa.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Winners"
+                ],
+                "summary": "Lấy danh sách người trúng giải (Có phân trang)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID của chiến dịch",
+                        "name": "campaign_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID của giải thưởng",
+                        "name": "prize_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Số trang hiện tại (Mặc định: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Số lượng phần tử mỗi trang (Mặc định: 10)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Thành công",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/internal_game_winner.PaginatedResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Lỗi dữ liệu đầu vào",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/game/winner/draw": {
             "post": {
                 "description": "Thực hiện bốc thăm ngẫu nhiên bảo mật dưới dạng Transaction để tìm vé trúng thưởng, tự động trừ kho giải và hủy các vé còn lại của user trúng giải.",
@@ -598,6 +671,37 @@
                 "prize_id": {
                     "type": "string",
                     "example": "018f3c4a-2d4c-7b1e-9c1a-2b1c0f2a9f3b"
+                }
+            }
+        },
+        "internal_game_winner.PaginatedResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_game_winner.Winner"
+                    }
+                },
+                "meta": {
+                    "$ref": "#/definitions/internal_game_winner.PaginationMeta"
+                }
+            }
+        },
+        "internal_game_winner.PaginationMeta": {
+            "type": "object",
+            "properties": {
+                "current_page": {
+                    "type": "integer"
+                },
+                "per_page": {
+                    "type": "integer"
+                },
+                "total_items": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
                 }
             }
         },

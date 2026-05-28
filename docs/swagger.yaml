@@ -209,6 +209,26 @@ definitions:
     - campaign_id
     - prize_id
     type: object
+  internal_game_winner.PaginatedResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/internal_game_winner.Winner'
+        type: array
+      meta:
+        $ref: '#/definitions/internal_game_winner.PaginationMeta'
+    type: object
+  internal_game_winner.PaginationMeta:
+    properties:
+      current_page:
+        type: integer
+      per_page:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
   internal_game_winner.Winner:
     properties:
       campaign_id:
@@ -379,6 +399,52 @@ paths:
       summary: Upload file Excel để import lượng lớn vé số
       tags:
       - Tickets
+  /game/winner:
+    get:
+      consumes:
+      - application/json
+      description: Lấy danh sách lịch sử trúng thưởng dựa theo chiến dịch hoặc giải
+        thưởng, hỗ trợ phân trang chuẩn hóa.
+      parameters:
+      - description: ID của chiến dịch
+        in: query
+        name: campaign_id
+        type: string
+      - description: ID của giải thưởng
+        in: query
+        name: prize_id
+        type: string
+      - description: 'Số trang hiện tại (Mặc định: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Số lượng phần tử mỗi trang (Mặc định: 10)'
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Thành công
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_game_winner.PaginatedResponse'
+              type: object
+        "400":
+          description: Lỗi dữ liệu đầu vào
+          schema:
+            $ref: '#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError'
+        "500":
+          description: Lỗi hệ thống
+          schema:
+            $ref: '#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError'
+      summary: Lấy danh sách người trúng giải (Có phân trang)
+      tags:
+      - Winners
   /game/winner/draw:
     post:
       consumes:
