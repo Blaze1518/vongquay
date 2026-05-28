@@ -81,6 +81,7 @@ func SetupRouter(authHandler *auth.Handler, campaignHandler *campaign.Handler, p
 			winnerGroup := gameGroup.Group("winner")
 			{
 				winnerGroup.POST("/draw", winnerHandler.Draw)
+				winnerGroup.GET("", winnerHandler.ListWinners)
 			}
 		}
 	}

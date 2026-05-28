@@ -13,6 +13,7 @@ import (
 
 type Service interface {
 	ExecuteDraw(ctx context.Context, campaignID string, prizeID string) (*Winner, error)
+	ListWinners(ctx context.Context, req ListWinnersRequest) (*PaginatedResponse, error)
 }
 
 type service struct {
@@ -91,4 +92,35 @@ func (s *service) ExecuteDraw(ctx context.Context, campaignID string, prizeID st
 	}
 
 	return winnerResult, nil
+}
+
+func (s *service) ListWinners(ctx context.Context, req ListWinnersRequest) (*PaginatedResponse, error) {
+	if req.Page <= 0 {
+		req.Page = 1
+	}
+	if req.Limit <= 0 {
+		req.Limit = 10
+	}
+
+	offset := (req.Page - 1) * req.Limit
+
+	items, totalItems, err := s.winnerRepo.List(ctx, req.CampaignID, req.PrizeID, offset, req.Limit)
+	if err != nil {
+		return nil, err
+	}
+
+	totalPages := int(totalItems) / req.Limit
+	if int(totalItems)%req.Limit != 0 {
+		totalPages++
+	}
+
+	return &PaginatedResponse{
+		Items: items,
+		Meta: PaginationMeta{
+			CurrentPage: req.Page,
+			PerPage:     req.Limit,
+			TotalItems:  totalItems,
+			TotalPages:  totalPages,
+		},
+	}, nil
 }

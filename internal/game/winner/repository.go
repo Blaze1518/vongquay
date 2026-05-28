@@ -10,6 +10,7 @@ import (
 type Repository interface {
 	Create(ctx context.Context, winner *Winner) error
 	GetWinnersCountByPrize(ctx context.Context, campaignID, prizeID string) (int64, error)
+	List(ctx context.Context, campaignID, prizeID string, offset, limit int) ([]*Winner, int64, error)
 }
 
 type repository struct {
@@ -34,4 +35,29 @@ func (r *repository) GetWinnersCountByPrize(ctx context.Context, campaignID, pri
 		Where("campaign_id = ? AND prize_id = ?", campaignID, prizeID).
 		Count(&count).Error
 	return count, err
+}
+
+func (r *repository) List(ctx context.Context, campaignID, prizeID string, offset, limit int) ([]*Winner, int64, error) {
+	var winners []*Winner
+	var total int64
+
+	query := r.getDB(ctx).WithContext(ctx).Model(&Winner{})
+
+	if campaignID != "" {
+		query = query.Where("campaign_id = ?", campaignID)
+	}
+	if prizeID != "" {
+		query = query.Where("prize_id = ?", prizeID)
+	}
+
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	err := query.Order("created_at DESC").
+		Offset(offset).
+		Limit(limit).
+		Find(&winners).Error
+
+	return winners, total, err
 }

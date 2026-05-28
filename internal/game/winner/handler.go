@@ -43,3 +43,34 @@ func (h *Handler) Draw(c *gin.Context) {
 
 	c.JSON(http.StatusOK, httperrs.Success(*result))
 }
+
+// ListWinners godoc
+// @Summary      Lấy danh sách người trúng giải (Có phân trang)
+// @Description  Lấy danh sách lịch sử trúng thưởng dựa theo chiến dịch hoặc giải thưởng, hỗ trợ phân trang chuẩn hóa.
+// @Tags         Winners
+// @Accept       json
+// @Produce      json
+// @Param        campaign_id  query  string  false  "ID của chiến dịch"
+// @Param        prize_id     query  string  false  "ID của giải thưởng"
+// @Param        page         query  int     false  "Số trang hiện tại (Mặc định: 1)"
+// @Param        limit        query  int     false  "Số lượng phần tử mỗi trang (Mặc định: 10)"
+// @Success      200          {object}  httperrs.APIError{data=PaginatedResponse} "Thành công"
+// @Failure      400          {object}  httperrs.APIError  "Lỗi dữ liệu đầu vào"
+// @Failure      500          {object}  httperrs.APIError  "Lỗi hệ thống"
+// @Router       /game/winner [get]
+func (h *Handler) ListWinners(c *gin.Context) {
+	var req ListWinnersRequest
+
+	if err := c.ShouldBindQuery(&req); err != nil {
+		_ = c.Error(httperrs.FromGinValidation(err))
+		return
+	}
+
+	result, err := h.winnerService.ListWinners(c.Request.Context(), req)
+	if err != nil {
+		_ = c.Error(httperrs.ValidationError(err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, httperrs.Success(*result))
+}
