@@ -109,6 +109,48 @@
             }
         },
         "/game/ticket": {
+            "get": {
+                "description": "Trả về danh sách các vé số đã được phát hành trong hệ thống, sắp xếp theo thời gian tạo giảm dần (mới nhất lên đầu). Hỗ trợ phân trang qua query parameters.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Lấy danh sách vé số (Phân trang)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lấy danh sách vé số thành công",
+                        "schema": {
+                            "$ref": "#/definitions/internal_game_ticket.PaginatedResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Tham số gửi lên không hợp lệ",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Lỗi hệ thống nội bộ",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Tạo mới một lượt chơi/vé số thuộc về một chiến dịch. Mã vé dài 21 ký tự sẽ tự động được sinh ngẫu nhiên bảo mật ở hệ thống.",
                 "consumes": [
@@ -593,6 +635,37 @@
                 "campaign_id": {
                     "type": "string",
                     "example": "018f3c4a-2d4c-7b1e-9c1a-2b1c0f2a9f3a"
+                }
+            }
+        },
+        "internal_game_ticket.PaginatedResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_game_ticket.Ticket"
+                    }
+                },
+                "meta": {
+                    "$ref": "#/definitions/internal_game_ticket.PaginationMeta"
+                }
+            }
+        },
+        "internal_game_ticket.PaginationMeta": {
+            "type": "object",
+            "properties": {
+                "current_page": {
+                    "type": "integer"
+                },
+                "per_page": {
+                    "type": "integer"
+                },
+                "total_items": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
                 }
             }
         },

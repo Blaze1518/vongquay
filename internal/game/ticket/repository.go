@@ -16,7 +16,8 @@ type Repository interface {
 	Update(ctx context.Context, ticket *Ticket) error
 	CancelOtherTickets(ctx context.Context, campaignID string, username string, winningTicketID string) error
 	GetRandomValidTicket(ctx context.Context, campaignID string) (*Ticket, error)
-	
+	List(ctx context.Context, offset, limit int) ([]*Ticket, int64, error)
+
 	CreateJob(ctx context.Context, job *TicketImportJob) error
 	UpdateJobStatus(ctx context.Context, jobID string, status string) error
 	UpdateJobProgress(ctx context.Context, jobID string, total, success, failed int) error
@@ -137,4 +138,22 @@ func (r *repository) GetRandomValidTicket(ctx context.Context, campaignID string
 	}
 	
 	return &luckyTicket, nil
+}
+
+func (r *repository) List(ctx context.Context, offset, limit int) ([]*Ticket, int64, error) {
+	var winners []*Ticket
+	var total int64
+
+	query := r.getDB(ctx).WithContext(ctx).Model(&Ticket{})
+
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	err := query.Order("created_at DESC").
+		Offset(offset).
+		Limit(limit).
+		Find(&winners).Error
+
+	return winners, total, err
 }

@@ -9,6 +9,7 @@ import (
 
 type Service interface {
 	Create(ctx context.Context, req CreateTicketRequest) (*Ticket, error)
+	ListTickets(ctx context.Context, req ListTicketsRequest) (*PaginatedResponse, error)
 }
 
 type service struct {
@@ -37,6 +38,37 @@ func (s *service) Create(ctx context.Context, req CreateTicketRequest) (*Ticket,
 	}
 
 	return ticket, nil
+}
+
+func (s *service) ListTickets(ctx context.Context, req ListTicketsRequest) (*PaginatedResponse, error) {
+	if req.Page <= 0 {
+		req.Page = 1
+	}
+	if req.Limit <= 0 {
+		req.Limit = 10
+	}
+
+	offset := (req.Page - 1) * req.Limit
+
+	items, totalItems, err := s.ticketRepo.List(ctx, offset, req.Limit)
+	if err != nil {
+		return nil, err
+	}
+
+	totalPages := int(totalItems) / req.Limit
+	if int(totalItems)%req.Limit != 0 {
+		totalPages++
+	}
+
+	return &PaginatedResponse{
+		Items: items,
+		Meta: PaginationMeta{
+			CurrentPage: req.Page,
+			PerPage:     req.Limit,
+			TotalItems:  totalItems,
+			TotalPages:  totalPages,
+		},
+	}, nil
 }
 
 func (s *service) generateUniqueTicketNumber() (string, error) {

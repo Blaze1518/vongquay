@@ -157,6 +157,26 @@ definitions:
     required:
     - campaign_id
     type: object
+  internal_game_ticket.PaginatedResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/internal_game_ticket.Ticket'
+        type: array
+      meta:
+        $ref: '#/definitions/internal_game_ticket.PaginationMeta'
+    type: object
+  internal_game_ticket.PaginationMeta:
+    properties:
+      current_page:
+        type: integer
+      per_page:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
   internal_game_ticket.Ticket:
     properties:
       campaign_id:
@@ -343,6 +363,35 @@ paths:
       tags:
       - Prizes
   /game/ticket:
+    get:
+      description: Trả về danh sách các vé số đã được phát hành trong hệ thống, sắp
+        xếp theo thời gian tạo giảm dần (mới nhất lên đầu). Hỗ trợ phân trang qua
+        query parameters.
+      parameters:
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lấy danh sách vé số thành công
+          schema:
+            $ref: '#/definitions/internal_game_ticket.PaginatedResponse'
+        "400":
+          description: Tham số gửi lên không hợp lệ
+          schema:
+            $ref: '#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError'
+        "500":
+          description: Lỗi hệ thống nội bộ
+          schema:
+            $ref: '#/definitions/github_com_Blaze1518_sinhnhatf168_internal_errors.APIError'
+      summary: Lấy danh sách vé số (Phân trang)
+      tags:
+      - Tickets
     post:
       consumes:
       - application/json

@@ -82,3 +82,30 @@ func (h *Handler) ImportExcel(c *gin.Context) {
 
 	c.JSON(http.StatusAccepted, httperrs.Success(job))
 }
+
+// ListTickets godoc
+// @Summary      Lấy danh sách vé số (Phân trang)
+// @Description  Trả về danh sách các vé số đã được phát hành trong hệ thống, sắp xếp theo thời gian tạo giảm dần (mới nhất lên đầu). Hỗ trợ phân trang qua query parameters.
+// @Tags         Tickets
+// @Produce      json
+// @Param        request      query     ListTicketsRequest  true  "Tham số phân trang và bộ lọc"
+// @Success      200          {object}  PaginatedResponse         "Lấy danh sách vé số thành công"
+// @Failure      400          {object}  httperrs.APIError         "Tham số gửi lên không hợp lệ"
+// @Failure      500          {object}  httperrs.APIError         "Lỗi hệ thống nội bộ"
+// @Router       /game/ticket [get]
+func (h *Handler) ListTickets(c *gin.Context) {
+    var req ListTicketsRequest
+
+    if err := c.ShouldBindQuery(&req); err != nil {
+        _ = c.Error(httperrs.FromGinValidation(err))
+        return
+    }
+
+    result, err := h.ticketService.ListTickets(c.Request.Context(), req)
+    if err != nil {
+        _ = c.Error(httperrs.ValidationError(err.Error()))
+        return 
+    }
+
+    c.JSON(http.StatusOK, httperrs.Success(*result))
+}
