@@ -76,6 +76,7 @@ func SetupRouter(authHandler *auth.Handler, campaignHandler *campaign.Handler, p
 			ticketGroup := gameGroup.Group("ticket")
 			{
 				ticketGroup.POST("/", ticketHandler.Create)
+				ticketGroup.GET("/", ticketHandler.ListTickets)
 				ticketGroup.POST("/import", ticketHandler.ImportExcel)
 			}
 			winnerGroup := gameGroup.Group("winner")
