@@ -75,6 +75,7 @@ func (s *service) ExecuteDraw(ctx context.Context, campaignID string, prizeID st
 		winnerResult = &Winner{
 			CampaignID:   campaignID,
 			PrizeID:      prizeID,
+			PrizeName:    p.Name,
 			TicketID:     luckyTicket.ID,
 			TicketNumber: luckyTicket.TicketNumber,
 			Username:     luckyTicket.Username,

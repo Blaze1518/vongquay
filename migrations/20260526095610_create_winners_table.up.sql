@@ -8,6 +8,7 @@ CREATE TABLE winners (
     id            UUID PRIMARY KEY,
     campaign_id   UUID NOT NULL,
     prize_id      UUID NOT NULL,
+    prize_name    VARCHAR(255) NOT NULL,
     ticket_id     UUID NOT NULL,
     ticket_number VARCHAR(21) NOT NULL,
     username      VARCHAR(100) NOT NULL,
